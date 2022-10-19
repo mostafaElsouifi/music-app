@@ -1,0 +1,22 @@
+{
+  "header": {
+    "about": "About",
+    "register": "Login / Register"
+  },
+  "auth_modal": {
+    "account": "Your Account",
+    "login": "Login",
+    "register": "Register"
+  },
+  "home": {
+    "listen": "Listen to Music!",
+    "songs": "Songs"
+  },
+  "song": {
+    "comment_count": "No comments | 1 Comment | {count} Comments"
+  },
+  "register": {
+    "accept": "I accept Music's {0}",
+    "tos": "Terms of Sevice"
+  }
+}

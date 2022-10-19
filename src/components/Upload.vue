@@ -1,0 +1,137 @@
+<template>
+  <div class="bg-white rounded border border-gray-200 relative flex flex-col">
+    <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
+      <span class="card-title">Upload</span>
+      <i class="fas fa-upload float-right text-green-400 text-2xl"></i>
+    </div>
+    <div class="p-6">
+      <!--upload dropbox-->
+      <div
+        class="w-full px-10 py-20 border border-dashed border-gray-400 rounded text-gray-400 text-center transition duration-500 hover:text-white hover:bg-green-400 hover:border-solid hover:border-green-400 cursor-pointer"
+        :class="{
+          'bg-green-400 border solid border-green-400 text-white': is_dragOver,
+        }"
+        @drag.prevent.stop=""
+        @dragstart.prevent.stop=""
+        @dragend.prevent.stop="is_dragOver = false"
+        @dragenter.prevent.stop="is_dragOver = true"
+        @dragover.prevent.stop="is_dragOver = true"
+        @dragleave.prevent.stop="is_dragOver = false"
+        @drop.prevent.stop="upload($event)"
+      >
+        <h5>Drop your files here</h5>
+      </div>
+      <input class="mt-4" type="file" multiple @change="upload($event)" />
+      <hr class="my-6" />
+      <!--progress bar-->
+      <div class="mb-4" v-for="upload in uploads" :key="upload.name">
+        <!--file name-->
+        <div class="font-bold text-sm" :class="upload.text_class">
+          <i :class="upload.icon" class="mr-2"></i>{{ upload.name }}
+        </div>
+        <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
+          <!--inner progress bar-->
+          <div
+            class="transition-all progress-bar"
+            :class="upload.variant"
+            :style="{ width: upload.current_progress + '%' }"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { storage, auth, songsCollection } from "@/includes/firebase";
+export default {
+  name: "AppUpload",
+  data() {
+    return {
+      is_dragOver: false,
+      uploads: [],
+    };
+  },
+  props: ["addSong"],
+  methods: {
+    upload($event) {
+      const files = $event.dataTransfer
+        ? [...$event.dataTransfer.files]
+        : [...$event.target.files];
+      files.forEach((file) => {
+        if (file.type !== "audio/mpeg") {
+          return;
+        }
+        if (!navigator.onLine) {
+          this.uploads.push({
+            task: {},
+            current_progress: 100,
+            name: file.name,
+            variant: "bg-red-400",
+            icon: "fas fa-times",
+            text_class: "text-red-400",
+          });
+          console.log(this.uploads);
+          return;
+        }
+        const storageRef = storage.ref();
+        const songsRef = storageRef.child(`songs/${file.name}`);
+        const task = songsRef.put(file);
+        const uploadIndex =
+          this.uploads.push({
+            task,
+            current_progress: 0,
+            name: file.name,
+            variant: "bg-blue-400",
+            text_class: "",
+            icon: "fas fa-spinner fa-spin",
+          }) - 1;
+        task.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            this.uploads[uploadIndex].current_progress = progress;
+            console.log(snapshot);
+          },
+          (error) => {
+            this.uploads[uploadIndex].variant = "bg-red-400";
+            this.uploads[uploadIndex].icon = "fas fa-times";
+            this.uploads[uploadIndex].text_class = "text-red-400";
+            console.log(error);
+          },
+          async () => {
+            const song = {
+              uid: auth.currentUser.uid,
+              display_name: auth.currentUser.displayName,
+              original_name: task.snapshot.ref.name,
+              modified_name: task.snapshot.ref.name,
+              gener: "",
+              comment_count: 0,
+            };
+            song.url = await task.snapshot.ref.getDownloadURL();
+            const songRef = await songsCollection.add(song);
+            const songSnapshot = await songRef.get();
+            this.addSong(songSnapshot);
+            this.uploads[uploadIndex].variant = "bg-green-400";
+            this.uploads[uploadIndex].icon = "fas fa-check";
+            this.uploads[uploadIndex].text_class = "text-green-400";
+          }
+        );
+      });
+
+      this.is_dragOver = false;
+    },
+    // cancelUpload() {
+    //   this.uploads.forEach((upload) => {
+    //     upload.task.cancel();
+    //   });
+    // },
+  },
+  beforeUnmount() {
+    // to cancel uploads if the user navigate to another page
+    this.uploads.forEach((upload) => {
+      upload.task.cancel();
+    });
+  },
+};
+</script>
