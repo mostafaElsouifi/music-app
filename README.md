@@ -1,10 +1,13 @@
 # music-app
-This is a music web application which users can listen to music and create accounts to upload their songs and dd comments to another songs .
+This is a music web application which users can listen to musics and create their own accounts to upload their songs and dd comments to another songs .
 
 ## Technologies used : 
 1. Vue.js 
 2. Firebase : firestore and firecloud 
 3. Tailwind Css
+4. vee-validate 
+
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
