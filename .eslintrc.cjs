@@ -13,6 +13,17 @@ module.exports = {
       files: ["cypress/e2e/**.{cy,spec}.{js,ts,jsx,tsx}"],
       extends: ["plugin:cypress/recommended"],
     },
+    {
+      files: ["src/components/__tests__/**.spec.js"],
+      globals: {
+        test: "readonly",
+        describe: "readonly",
+        vi: "readonly",
+        expect: "readonly",
+        it: "readonly",
+        beforeEach: "readonly",
+      },
+    },
   ],
   parserOptions: {
     ecmaVersion: "latest",
@@ -23,6 +34,7 @@ module.exports = {
   rules: {
     "vue/multi-word-component-names": "off",
     "vue/no-reserved-component-names": "off",
+    "@typescript-eslint/ban-ts-ignore": "off",
     "prettier/prettier": [
       "error",
       {
