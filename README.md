@@ -1,6 +1,12 @@
 # music-app
+This is a music web application which users can listen to musics and create their own accounts to upload their songs and dd comments to another songs .
 
-This template should help get you started developing with Vue 3 in Vite.
+## Technologies used : 
+1. Vue.js 
+2. Firebase : firestore and firecloud 
+3. Tailwind Css
+4. vee-validate 
+
 
 ## Recommended IDE Setup
 
