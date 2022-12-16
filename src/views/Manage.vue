@@ -1,4 +1,5 @@
 <template>
+  <Loading v-if="displayLoading" />
   <section class="container mx-auto mt-6">
     <div class="md:grid md:grid-cols-3 md:gap-4">
       <div class="col-span-1">
@@ -25,6 +26,8 @@
               :removeSong="removeSong"
               :index="i"
               :updateUnsavedFlag="updateUnsavedFlag"
+              @display-loading="displayLoading = true"
+              @hide-loading="displayLoading = false"
             />
           </div>
         </div>
@@ -36,17 +39,20 @@
 //import useUserStore from "@/stores/user";
 import AppUpload from "@/components/Upload.vue";
 import CompositionItem from "@/components/CompositionItem.vue";
+import Loading from "../components/Loading.vue";
 import { songsCollection, auth } from "@/includes/firebase";
 export default {
   name: "manage",
   components: {
     AppUpload,
     CompositionItem,
+    Loading,
   },
   data() {
     return {
       songs: [],
       unSavedFlag: false,
+      displayLoading: false,
     };
   },
   async created() {

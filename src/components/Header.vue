@@ -35,7 +35,9 @@
               >
             </li>
             <li>
-              <a class="text-white px-2" @click.prevent="signOut">Logout</a>
+              <a class="text-white px-2 cursor-pointer" @click.prevent="signOut"
+                >Logout</a
+              >
             </li>
           </template>
         </ul>

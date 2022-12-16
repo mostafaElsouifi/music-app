@@ -72,6 +72,7 @@
 
 <script>
 import { songsCollection, storage } from "../includes/firebase";
+
 export default {
   name: "CompositionItem",
   props: {
@@ -96,9 +97,11 @@ export default {
       required: true,
     },
   },
+  components: {},
   data() {
     return {
       showForm: false,
+      displayLoading: false,
       schema: {
         modified_name: "required",
         gener: "alpha_spaces",
@@ -111,14 +114,17 @@ export default {
   },
   methods: {
     async edit(values) {
+      this.$emit("display-loading");
       this.in_submission = true;
       this.show_alert = true;
       this.alert_variant = "bg-blue-500";
       this.alert_message = "Please Wait! updating song info.";
       try {
         await songsCollection.doc(this.song.docID).update(values);
+        this.$emit("hide-loading");
       } catch (e) {
-        console.log(e);
+        this.$emit("hide-loading");
+
         this.in_submission = false;
         this.alert_variant = "bg-red-500";
         this.alert_message = "Something went wrong! please try again later";
@@ -131,10 +137,12 @@ export default {
       this.alert_message = "Success!";
     },
     async deleteSong() {
+      this.$emit("display-loading");
       const storageRef = storage.ref();
       const songRef = storageRef.child(`songs/${this.song.original_name}`);
       await songRef.delete();
       await songsCollection.doc(this.song.docID).delete();
+      this.$emit("hide-loading");
       this.removeSong(this.index);
     },
   },
