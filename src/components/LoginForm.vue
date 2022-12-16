@@ -1,10 +1,10 @@
 <template>
   <div
     class="text-white text-center font-bold p-4 mb-4 rounded"
-    v-if="login_show_alert"
-    :class="login_alert_variant"
+    v-if="show_alert"
+    :class="alert_variant"
   >
-    {{ login_alert_message }}
+    {{ alert_message }}
   </div>
   <!--Login Form -->
   <vee-form :validation-schema="loginSchema" @submit="login">
@@ -29,6 +29,14 @@
       />
       <ErrorMessage class="text-red-500" name="password" />
     </div>
+    <div class="mt-5 pl-2">
+      <a
+        @click="displayResetForm"
+        class="text-black hover:border-b hover:border-black cursor-pointer"
+        >Forgot your password</a
+      >
+    </div>
+
     <!--submit button -->
     <button
       type="submit"
@@ -51,29 +59,32 @@ export default {
         password: "required|min:9|max:100|excluded:password",
       },
       login_in_submission: false,
-      login_show_alert: false,
-      login_alert_variant: "bg-blue-500",
-      login_alert_message: "Please wait! We loggin you in.",
+      show_alert: false,
+      alert_variant: "bg-blue-500",
+      alert_message: "Please wait! We loggin you in.",
     };
   },
   methods: {
-    ...mapActions(useUserStore, ["authenticate"]),
+    ...mapActions(useUserStore, ["authenticate", "resetPassword"]),
     async login(values) {
       this.login_in_submission = true;
-      this.login_show_alert = true;
-      this.login_alert_variant = "bg-blue-500";
-      this.login_alert_message = "Please wait! We loggin you in.";
+      this.show_alert = true;
+      this.alert_variant = "bg-blue-500";
+      this.alert_message = "Please wait! We loggin you in.";
       try {
         await this.authenticate(values);
       } catch (error) {
         this.login_in_submission = false;
-        this.login_alert_variant = "bg-red-500";
-        this.login_alert_message = "Invalid loggin details";
+        this.alert_variant = "bg-red-500";
+        this.alert_message = "Invalid loggin details";
         return;
       }
-      this.login_alert_variant = "bg-green-500";
-      this.login_alert_message = "Success! You logged  in.";
+      this.alert_variant = "bg-green-500";
+      this.alert_message = "Success! You logged  in.";
       window.location.reload();
+    },
+    displayResetForm() {
+      this.$emit("display-reset-form");
     },
   },
 };

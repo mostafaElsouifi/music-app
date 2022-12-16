@@ -30,5 +30,8 @@ export default defineStore("user", {
       await auth.signOut();
       this.userLoggedIn = false;
     },
+    async resetPassword(email) {
+      await auth.sendPasswordResetEmail(email);
+    },
   },
 });

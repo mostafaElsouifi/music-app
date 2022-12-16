@@ -1,5 +1,10 @@
 <template>
   <!--Auth modal-->
+  <app-reset-password
+    v-if="displayResetForm"
+    @hide-reset-form="displayResetForm = false"
+    @display-login="displayLogin"
+  />
   <div :class="hiddenClass" id="modal">
     <div class="fixed top-0 min-h-full min-w-full bg-gray-600 opacity-75"></div>
     <div calss="flex justify-center items-center">
@@ -44,7 +49,10 @@
           </button>
         </div>
         <!--Forms-->
-        <app-login-form v-if="tab === 'login'" />
+        <app-login-form
+          v-if="tab === 'login'"
+          @displayResetForm="displayResetPassword"
+        />
         <app-register-form v-if="tab === 'register'" />
       </div>
     </div>
@@ -55,15 +63,18 @@ import { mapState, mapWritableState } from "pinia";
 import useModalStore from "@/stores/modal";
 import AppLoginForm from "@/components/LoginForm.vue";
 import AppRegisterForm from "@/components/RegisterForm.vue";
+import AppResetPassword from "@/components/ResetPassword.vue";
 export default {
   name: "Auth",
   components: {
     AppLoginForm,
     AppRegisterForm,
+    AppResetPassword,
   },
   data() {
     return {
       tab: "login",
+      displayResetForm: false,
     };
   },
   computed: {
@@ -72,6 +83,15 @@ export default {
       modalVisibality: "isOpen",
     }),
   },
-  methods: {},
+  methods: {
+    displayResetPassword() {
+      this.modalVisibality = false;
+      this.displayResetForm = true;
+    },
+    displayLogin() {
+      this.displayResetForm = false;
+      this.modalVisibality = true;
+    },
+  },
 };
 </script>
